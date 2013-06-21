@@ -69,9 +69,9 @@ class tblAgent extends CI_Model
 		return TRUE;
 	}
 	
-	function validate_user($name){
+	function validate_user($name,$id){
 		
-		$q = $this->db->query("select * from ".$this->table." where AgentName = '".$name."'");
+		$q = $this->db->query("select * from ".$this->table." where AgentName = '".$name."' OR ID = '".$id."'");
 		return $q;
 	}
 	

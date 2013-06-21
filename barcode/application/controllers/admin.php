@@ -117,13 +117,16 @@ class Admin extends CI_Controller {
 		foreach($this->input->post() as $key => $value){
 			$$key = $value;
 		}
-		$name = $_FILES["photo"]["name"];
+		
+		$level = implode(",",$this->input->post('level'));
+		$bank = implode(",",$this->input->post('bank'));
+		$pho = $_FILES["photo"]["name"];
 		$data = array(
 			'ID'=>$id,
 			'AgentCode'=>$code,
 			'AgentName'=>$name,
 			'AgentPin'=>$pass,
-			'AgentPhoto'=>$name,
+			'AgentPhoto'=>$pho,
 			'Agenttlead'=>$tlead,
 			'AgentSup'=>$sup,
 			'AgentBank'=>$bank,
@@ -140,7 +143,7 @@ class Admin extends CI_Controller {
 			
 		);
 		
-		$validate = $this->tblAgent->validate_user($name);
+		$validate = $this->tblAgent->validate_user($name,$id);
 		if($validate->num_rows() == 0)
 		{
 			$insert = $this->tblAgent->insert($data);
@@ -172,14 +175,20 @@ class Admin extends CI_Controller {
 	function edit(){
 		$id = $this->input->get('id');
 		$search = $this->tblAgent->view_info($id);
+		$aclevel = explode(",",$search->AccessL);
+		$bnlist = explode(",",$search->AgentBank);
+		foreach($aclevel as $lcs)
+		{ $lvls[] = $lcs;}
+		foreach($bnlist as $bn)
+		{ $bns[] = $bn; }
 		$data = array(
 			'code'=>$search->AgentCode,
 			'name'=>$search->AgentName,
 			'pass'=>$search->AgentPin,
 			'tlead'=>$search->Agenttlead,
 			'sup'=>$search->AgentSup,
-			'bank'=>$search->AgentBank,
-			'level'=>$search->AccessL,
+			'bank'=>$bns,
+			'level'=>$lvls,
 			'suedo'=>$search->PseudoName,
 			'branch'=>$search->AgentBranch,
 			'contact'=>$search->AgentContact,
@@ -201,6 +210,8 @@ class Admin extends CI_Controller {
 		foreach($this->input->post() as $key => $value){
 			$$key = $value;
 		}
+		$level = implode(",",$this->input->post('level'));
+		$bank = implode(",",$this->input->post('bank'));
 		$phot = $_FILES["photo"]["name"];
 		if($name == ''){
 			$data = array(

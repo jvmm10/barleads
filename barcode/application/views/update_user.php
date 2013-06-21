@@ -2,19 +2,35 @@
 $(function(){
 	$('#myform').submit(function(){
 		var error = 0;
+		var s = $('#level').val();
+		var bbn = $('#bank').val();
 		$('.fields').each(function(index, element) {
             	if($(this).val() =='')
 				{
-					
-					error  = 1;
 					alert($(this).attr('id'));
+					error  = 1;
 				}
         });
+	if(s != null){	
+		$.each(s,function(index,value){
+			if(value == 'ADMIN')
+			{
+				error = 1;
+			}
+		});
+	}else
+	{
+		error  = 1;
+	}
+	if(bbn == null)
+	{
+		error  = 1;
+	}
 		
 		if(error ==0){
 		
 		var formData = new FormData($('form')[0]);
-		$.ajax({
+					$.ajax({
 						url: 'update',  //server script to process data
 						type: 'POST',
 						dataType:"json",
@@ -43,7 +59,7 @@ $(function(){
 		});
 		}else
 		{
-			alert('All fields are required.');
+			alert('All fields are required \n Access Level  - Admin can not be joined with other access level.');
 		}
 		
 		return false	
@@ -97,21 +113,21 @@ $(function(){
             <div class="rows">
             	<label>Agent Bank</label>
                 <?php 
-				echo form_dropdown('bank',  $this->addons->bankarray(), $bank,'class=fields');?>
+				echo form_dropdown('bank[]',  $this->addons->bankarray(), $bank,'id=bank class=fields style="height:70px;" multiple="multiple"');?>
         	</div>
             
             <div class="rows">
             	<label>Access Level</label>
                 <?php 
 				$options = array(
-					'' =>'Select',
+					'ADMIN'=>'ADMIN',
 					'FIELD'=>'FIELD',
 					'TL'=>'TL',
 					'AGENT'=>'AGENT',
 					'OJT'=>'OJT',
 				);
 				
-				echo form_dropdown('level', $options, $level,'class=fields');?>
+				echo form_dropdown('level[]', $options, $level,' id=level class=fields style="height:70px;" multiple="multiple"');?>
         	</div>
             
             <div class="rows">
@@ -119,7 +135,7 @@ $(function(){
                 <?php 
 				$options = array(
 					'' =>'Select',
-					'1'=>'1',
+					'level1'=>'level1',
 					
 				);
 				echo form_dropdown('alevel', $options, $alevel,'class=fields');?>

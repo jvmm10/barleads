@@ -5,7 +5,7 @@ class Add extends CI_Controller {
 	function __construct()
 	{
 			parent::__construct();
-			$this->globals->is_admin($this->session->userdata('logged'),$this->session->userdata('user_id'),$this->session->userdata('role'));		
+			$this->globals->is_head($this->session->userdata('logged'),$this->session->userdata('user_id'),$this->session->userdata('role'));		
 	}	
 	 
 	function index()
@@ -218,4 +218,102 @@ switch($table)
 		exit;
 	}
 	
+	function status()
+	{
+		$data['status'] = $this->status->status_list();
+		$data['bank'] = $this->status->back_list();
+		$this->load->view('viewstatus',$data);
+	}
+	
+	function checksub()
+	{
+		$bank_id = $this->input->post('bank_id');
+		$status_id = $this->input->post('status_id');
+		 $response = array();
+		 $q = $this->addons->sublist($bank_id,$status_id);
+		 
+		 if($q)
+		 {
+			$response['status'] = TRUE;
+			$response['list'] = $q;
+		 }else
+		 {
+			$response['status'] = FALSE;
+		 }
+		echo json_encode($response);
+		exit;
+	}
+	
+	
+	function addsub()
+	{
+		$this->load->view('addsub');
+	}
+	
+	function savesub(){
+			$sub = $this->input->post('substat');
+			$text = $this->input->post('text');
+			$status = $this->input->post('status_id');
+			$bank = $this->input->post('bank_id');
+			$response = array();
+			$data = array(
+				'status_name_id'=>$status,
+				'bank_id'=>$bank,
+				'status_acro'=>$sub,
+				'status_mean'=>$text
+			);
+			$q = $this->addons->tblsuvsave($data);
+			
+			if($q)
+			{
+				$response['status'] = TRUE;
+			}else{
+				$respone['status'] = FALSE;
+			}
+		echo json_encode($response);
+	}
+	
+	function deletesub()
+	{
+		$id = $this->input->post('id');
+		$q = $this->addons->deletesub($id);
+		$response = array();
+		if($q)
+		{
+				$response['status'] = TRUE;
+		}else
+		{
+			$response['status'] = FALSE;
+		}
+		echo json_encode($response);
+		exit;
+	}
+	
+	function editsub($id)
+	{
+		$q = $this->addons->subrow($id);
+		$data['info'] = $q;
+		$this->load->view('editsub',$data);
+	}
+	
+	function upsub()
+	{
+		$id = $this->input->post('id');
+		$acro = $this->input->post('substat');
+		$mean = $this->input->post('text');
+		$response = array();
+		$data = array(
+				'status_acro'=>$acro,
+				'status_mean'=>$mean
+			);
+		$q = $this->addons->updatesub($data,$id);
+		if($q)
+		{
+			$response['status'] = TRUE;
+		}else
+		{
+			$response['status']= FALSE;
+		}
+		echo json_encode($response);
+	}
 }

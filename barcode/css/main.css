@@ -140,18 +140,19 @@
 	border: 1px solid #D0D0D0;
 	-webkit-box-shadow: 0 0 8px #D0D0D0;
 	padding:10px;
+	width:550px;
 }
 
 #left_side
 {
 	float:left;
-	width:300px;
+	width:250px;
 }
 
 #right_side
 {
 	float:left;
-	width:300px;
+	width:250px;
 }
 
 .rows label

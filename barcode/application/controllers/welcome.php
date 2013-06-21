@@ -55,6 +55,10 @@ class Welcome extends CI_Controller {
 				{
 					redirect('/agent/index/');
 				}
+				else if($pos == 'HEADADMIN')
+				{
+					redirect('/add/index/');
+				}
 				
 				
 			}else

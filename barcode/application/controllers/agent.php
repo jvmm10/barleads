@@ -5,6 +5,7 @@ class Agent extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
+		$this->globals->is_other($this->session->userdata('logged'),$this->session->userdata('user_id'),$this->session->userdata('role'),$this->uri->segment(1));		
 	}
 	
 	function index()
@@ -101,4 +102,86 @@ class Agent extends CI_Controller {
 			
 	}
 	
+	
+	function status()
+	{
+		$data['css'] =  $this->globals->css();
+		$data['javascript'] = $this->globals->javascript();
+		$data['title'] = 'SP Madrid - Lead Status';
+		$data['status_list'] = $this->status->status_lists();
+		$this->load->view('header',$data);	
+			$this->load->view('Status',$data);
+		$this->load->view('footer');	
+	}
+	
+	function savestatus()
+	{
+		foreach($this->input->post() as $key => $value)
+		{$$key = $value; }
+		$table = '';
+		$response = array();
+		switch($bank)
+		{
+				case "BPI":
+					$table = 'tblbpi';
+				break;
+		}
+		
+		if($data = $this->agentmodel->checkbar($table,$barcode,$this->session->userdata('code'))){
+			$ins = array(
+				'ChCode'=>$data->CHCode,
+				'AgentCode'=>$data->Agent,
+				'Bank'=>$bank,
+				'Status'=>$status,
+				'SubStatus'=>$radio_checked,
+				'AcctNo'=>$data->AcctNo,
+				'CHName'=>$data->CHName,
+				'Amt'=>$amount,
+				'dDate'=>$data->dDate,
+				'dDatePTP'=>date("Y-m-d")
+			);
+			if($this->agentmodel->insertstatus($ins,'tblstatus'))
+			{
+				$response['success'] = TRUE;
+				$response['chcode'] = $data->CHCode;
+				$response['chname'] = $data->CHName;
+				$response['acctno'] = $data->AcctNo;
+				$response['status'] = $status;
+				$response['radio'] = $radio_checked;
+				$response['amount']=$amount;
+				$response['date'] = $data->dDate;
+			}
+		}
+		else
+		{
+			$response['success'] = FALSE;
+			$response['message'] = 'Invalid barcode or agent code.';
+		}
+		echo json_encode($response);
+	}
+	
+	function substatus()
+	{
+		$bank = $this->input->post('bank');
+		$status = $this->input->post('status');
+		$response =array();
+		$bank_id = $this->addons->bank_id($bank);
+		$status_id = $this->addons->status_id($status);
+		
+		$search = $this->addons->search_sub($bank_id,$status_id);
+		if($search)
+		{	$response['status'] = TRUE;
+			foreach($search as $val)
+			{
+				$response['subs'][$val->status_acro] = $val->status_mean;
+			}	
+		}
+		else
+		{
+			$response['status'] = FALSE;
+		}
+		
+		echo json_encode($response);
+	}
+
 }

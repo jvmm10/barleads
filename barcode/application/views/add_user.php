@@ -2,6 +2,8 @@
 $(function(){
 	$('#myform').submit(function(){
 		var error = 0;
+		var s = $('#level').val();
+		var bbn = $('#bank').val();
 		$('.fields').each(function(index, element) {
             	if($(this).val() =='')
 				{
@@ -9,6 +11,21 @@ $(function(){
 					error  = 1;
 				}
         });
+	if(s != null){	
+		$.each(s,function(index,value){
+			if(value == 'ADMIN')
+			{
+				error = 1;
+			}
+		});
+	}else
+	{
+		error  = 1;
+	}
+	if(bbn == null)
+	{
+		error  = 1;
+	}
 		
 		if(error ==0){
 		
@@ -42,7 +59,7 @@ $(function(){
 		});
 		}else
 		{
-			alert('All fields are required.');
+			alert('All fields are required \n Access Level  - Admin can not be joined with other access level.');
 		}
 		
 		return false	
@@ -89,7 +106,7 @@ $(function(){
             
              <div class="rows">
             	<label>Agent Supervisor</label>
-                <select name="sup" id="sup" class="fields">
+                <select name="sup" id="sup" class="fields" >
                 	<option value="">Select</option>
                    <?php echo $this->addons->sup();?>
                 </select>
@@ -97,16 +114,15 @@ $(function(){
             
             <div class="rows">
             	<label>Agent Bank</label>
-                <select name="bank" id="bank" class="fields">
-                	<option value="">Select</option>
+                <select name="bank[]" id="bank" class="fields" style="height:70px;" multiple="multiple">
                    <?php echo $this->addons->bank();?>
                 </select>
         	</div>
             
             <div class="rows">
             	<label>Access Level</label>
-               <select name="level" id="level" class="fields">
-                	<option value="">Select</option>
+               <select name="level[]" id="level" class="fields" multiple="multiple" style="height:70px;" >
+                <option value="ADMIN">ADMIN</option>
                     <option value="AGENT">AGENT</option>
                      <option value="FIELD">FIELD</option>
                       <option value="OJT">OJT</option>

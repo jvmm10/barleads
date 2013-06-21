@@ -109,7 +109,7 @@ $autoload['language'] = array();
 |
 */
 
-$autoload['model'] = array('tblAgent','bpi','ewb','fp','agentmodel','addons');
+$autoload['model'] = array('tblAgent','bpi','ewb','fp','agentmodel','addons','status');
 
 
 /* End of file autoload.php */

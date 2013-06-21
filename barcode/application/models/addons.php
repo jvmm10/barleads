@@ -2,6 +2,7 @@
 class Addons extends CI_Model
 {
 	private $table = "tblsupervisor";
+	private $sub = "tblstatussub";
 	
 	
 	function lists()
@@ -207,7 +208,7 @@ class Addons extends CI_Model
 	{
 		$string = array();
 		$q = $this->db->query('select * from tblbank');
-		$string[] = "SELECT";
+		
 		if($q->num_rows() > 0)
 		{
 			foreach($q->result() as $index)
@@ -217,6 +218,77 @@ class Addons extends CI_Model
 		}
 		
 		return $string;
+	}
+	
+	function sublist($bank,$status)
+	{
+		$q = $this->db->query("select * from ".$this->sub." where bank_id = '".$bank."' and status_name_id='".$status."'");
+		if($q->num_rows()>0)
+		{
+			$response = array();
+			foreach($q->result() as $index)
+			{
+				$response[$index->id] = array(
+					$index->status_acro=>$index->status_mean,
+				);
+			}
+			
+			return $response;
+		}
+		return FALSE;
+		
+		
+	}
+	
+	
+	function tblsuvsave($data)
+	{
+		$q = $this->db->insert($this->sub,$data);
+		return $q;
+	}
+	
+	function deletesub($id)
+	{
+		$q = $this->db->delete($this->sub,array('id'=>$id));
+		return $q;
+	}
+	
+	function subrow($id)
+	{
+		$q = $this->db->from($this->sub)->where('id',$id)->get();
+		return $q->row();
+	}
+	
+	function updatesub($data,$id)
+	{
+		$q = $this->db->where('id',$id)->update($this->sub,$data);
+		if($q)
+		{
+			return TRUE;
+		}
+		return FALSE;
+	}
+	
+	function bank_id($name)
+	{
+		$q = $this->db->from("tblbank")->where('bank_name',$name)->get();
+		return $q->row()->id;
+	}
+	
+	function status_id($name)
+	{
+		$q = $this->db->from("tblstatuslist")->where('status_name',$name)->get();
+		return $q->row()->id;
+	}
+	
+	function search_sub($bank,$status)
+	{
+		$q = $this->db->from($this->sub)->where('status_name_id',$status)->where('bank_id',$bank)->get();
+		if($q->num_rows()>0)
+		{
+				return $q->result();
+		}
+		return FALSE;
 	}
 	
 }

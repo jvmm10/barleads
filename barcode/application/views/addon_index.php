@@ -20,6 +20,7 @@
 		<li><a href="tlead">TLead</a></li>
 		<li><a href="bank">Bank</a></li>
 		<li><a href="branch">Branch</a></li>
+		<li><a href="status">Status</a></li>
 	</ul>
     
 </div>

@@ -44,6 +44,7 @@ class Globals
 			$javascript .= '<script src="'.$this->base_url().'../js/ui/jquery.ui.core.js"></script>';
             $javascript .= '<script src="'.$this->base_url().'../js/ui/jquery.ui.widget.js"></script>';
             $javascript .= '<script src="'.$this->base_url().'../js/ui/jquery.ui.tabs.js"></script>';
+			$javascript .= '<script src="'.$this->base_url().'../js/block.js"></script>';
 		/*	$javascript .= '<script src="'.$this->base_url().'../assets/js/fancybox/jquery.fancybox-1.3.4.pack.js"></script>';
 			$javascript .= '<script src="'.$this->base_url().'../assets/js/uiblock.js"></script>';
 			$javascript .= '<script src="'.$this->base_url().'../assets/js/turn.js"></script>';
@@ -79,11 +80,12 @@ class Globals
 	{
 		
 		$role = explode(",",$role);
-		if(count($role) > 1  || $role[0] != 'ADMIN' )
+		if(count($role) > 1  || ($role[0] != 'ADMIN' && $role[0] != 'HEADADMIN') )
 		{
 			$list = array(
 				'AGENT'=>array(
 					'LEADS'=>'agent/index',	
+					'STATUS'=>'agent/status'
 									
 				),
 				'OJT'=>array(
@@ -121,9 +123,26 @@ class Globals
 				}
 			$menu .= '</ul></div>';	
 			return $menu;
-		}else
+		}else if($role[0] == 'HEADADMIN')
 		{
-			$list = array('Accounts'=>'admin/index','Leads'=>'Leads/index','Add Ons'=>'add/index');
+			$list = array('Add Ons'=>'add/index');
+			$menu = '';
+			$menu .= '<div id="cssmenu"><ul>';
+				foreach($list as $index => $value)
+				{
+					$check = explode("/",$value);
+					if($check[0] == $current){
+						$menu .= "<li class='active'><span>".anchor($value,$index)."</span></li>";
+					}else{
+						$menu .= "<li><span>".anchor($value,$index)."</span></li>";
+					}
+				}
+			$menu .= '</ul></div>';
+			return $menu;
+		}
+		else
+		{
+			$list = array('Accounts'=>'admin/index','Leads'=>'Leads/index');
 		$menu = '';
 		$menu .= '<div id="cssmenu"><ul>';
 			foreach($list as $index => $value)
@@ -153,4 +172,41 @@ class Globals
 			redirect('welcome/index');
 		}
 	}
+	
+	function is_head($logged,$user_id,$role)
+	{
+		if($logged)
+		{
+			if($role != 'HEADADMIN')
+			{
+				redirect('error/index');
+			}
+		}else
+		{
+			redirect('welcome/index');
+		}
+	}
+	
+	
+	function is_other($logged,$user_id,$role,$current)
+	{
+		if($logged)
+		{
+			$exp = array();
+			$role = explode(",",$role);
+			foreach($role as $rol)
+			{
+				$exp[$rol] = $rol;
+			}
+		
+			if(!array_key_exists(strtoupper($current),$exp))
+			{
+				redirect('error/index');
+			}
+		}else
+		{
+			redirect('welcome/index');
+		}
+	}
+	
 }
